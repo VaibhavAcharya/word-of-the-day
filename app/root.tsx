@@ -42,7 +42,7 @@ export default function App() {
 
         <Links />
       </head>
-      <body className="bg-neutral-900 w-screen h-screen flex flex-col items-stretch justify-start gap-8 p-8">
+      <body className="bg-neutral-900 w-screen h-screen flex flex-col items-stretch justify-start gap-8 p-4 md:p-8">
         <h1 className="text-4xl/none font-black text-white text-center">
           Word of the day!
         </h1>
