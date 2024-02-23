@@ -1,19 +1,26 @@
-import { type MetaFunction } from "@remix-run/node";
+import { cssBundleHref } from "@remix-run/css-bundle";
+import type { LinksFunction, MetaFunction } from "@remix-run/node";
 import {
   Links,
+  LiveReload,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
 
-import "~/styles/tailwind.css";
+import tailwindStyles from "~/styles/tailwind.css";
 
 export const meta: MetaFunction = () => {
   return [{ title: "Word of the day!" }];
 };
 
-export function Layout({ children }: { children: React.ReactNode }) {
+export const links: LinksFunction = () => [
+  ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
+  { rel: "stylesheet", href: tailwindStyles },
+];
+
+export default function App() {
   return (
     <html lang="en" className="antialiased">
       <head>
@@ -40,15 +47,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
           Word of the day!
         </h1>
 
-        {children}
+        <Outlet />
 
+        <LiveReload />
         <ScrollRestoration />
         <Scripts />
       </body>
     </html>
   );
-}
-
-export default function App() {
-  return <Outlet />;
 }

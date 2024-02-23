@@ -5,15 +5,16 @@ import { useEffect, useState } from "react";
 import { Bot, UserRound } from "lucide-react";
 import OpenAI from "openai";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
-
+  
   const history = JSON.parse(formData.get("history") as string);
   const input = formData.get("input")?.toString() ?? "";
+
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
 
   const response = await openai.chat.completions.create({
     model: "gpt-4",
@@ -111,17 +112,19 @@ export default function Index() {
       id="container"
       className="bg-white p-8 rounded-3xl shadow-2xl flex-1 relative flex flex-col items-stretch justify-start overflow-hidden"
     >
-      <div className="max-w-4xl px-4 mx-auto flex flex-col items-stretch justify-start flex-1 overflow-auto">
-        {history.map((entry, index) => {
+      <div className="w-full max-w-4xl px-4 mx-auto flex flex-col items-stretch justify-start flex-1 overflow-auto">
+        {history.map((entry) => 
+        {
+          const key = JSON.stringify(entry)
           if (typeof entry === "string") {
-            return <Message key={index} message={entry} isUser={true} />;
+            return <Message key={key} message={entry} isUser={true} />;
           }
 
           if (entry.stage === "introduction_and_explanation") {
             return (
               <>
-                <Message key={index} message={entry.message} isUser={false} />
-                <Message key={index} message={entry.prompt} isUser={false} />
+                <Message key={key} message={entry.message} isUser={false} />
+                <Message key={key} message={entry.prompt} isUser={false} />
               </>
             );
           }
@@ -130,10 +133,10 @@ export default function Index() {
             return (
               <>
                 {entry.message ? (
-                  <Message key={index} message={entry.message} isUser={false} />
+                  <Message key={key} message={entry.message} isUser={false} />
                 ) : null}
                 <Message
-                  key={index}
+                  key={key}
                   message={
                     <div className="flex flex-col gap-2">
                       <strong>{entry.question}</strong>
@@ -154,7 +157,7 @@ export default function Index() {
 
           if (entry.stage === "confidence_check") {
             return (
-              <Message key={index} message={entry.message} isUser={false} />
+              <Message key={key} message={entry.message} isUser={false} />
             );
           }
 
@@ -166,6 +169,7 @@ export default function Index() {
         id="chat-form"
         method="post"
         className="shadow-2xl mt-8 w-[min(80%,640px)] mx-auto flex flex-row items-center justify-between gap-2 px-6 py-2 rounded-xl bg-teal-200"
+        reloadDocument={false}
       >
         <fieldset className="contents" disabled={isSubmitting}>
           <input
